@@ -1,0 +1,50 @@
+CREATE TABLE O_RollCall (roll_no INT, name VARCHAR(20));
+CREATE TABLE N_RollCall (roll_no INT, name VARCHAR(20));
+
+INSERT INTO O_RollCall VALUES (1, 'Himanshu');
+INSERT INTO O_RollCall VALUES (2, 'Ram');
+INSERT INTO O_RollCall VALUES (3, 'Soham');
+INSERT INTO O_RollCall VALUES (5, 'Mohan');
+INSERT INTO O_RollCall VALUES (6, 'Om');
+INSERT INTO O_RollCall VALUES (9, 'Yash');
+INSERT INTO O_RollCall VALUES (11, 'Mayur');
+
+SELECT * FROM O_RollCall;
+SELECT * FROM N_RollCall;
+
+
+CREATE OR REPLACE PROCEDURE merge_data(roll_limit IN INT) IS
+    done INT DEFAULT 0;
+    roll INT;
+    name VARCHAR(20);
+    CURSOR roll_cursor IS
+        SELECT roll_no, name FROM O_RollCall WHERE roll_no > roll_limit;
+BEGIN
+    OPEN roll_cursor;
+
+    LOOP
+        FETCH roll_cursor INTO roll, name;
+        EXIT WHEN roll_cursor%NOTFOUND;
+
+        -- Skip if the roll_no already exists in N_RollCall
+        DECLARE
+            v_count INT;
+        BEGIN
+            -- Check if the roll_no exists in N_RollCall
+            SELECT COUNT(*) INTO v_count FROM N_RollCall WHERE roll_no = roll;
+            
+            IF v_count = 0 THEN
+                -- If the roll_no does not exist, insert into N_RollCall
+                INSERT INTO N_RollCall (roll_no, name) VALUES (roll, name);
+            END IF;
+        END;
+
+    END LOOP;
+
+    CLOSE roll_cursor;
+END;
+/
+
+CALL merge_data(5);
+
+SELECT * FROM N_RollCall;

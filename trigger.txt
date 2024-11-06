@@ -1,0 +1,12 @@
+create table library1(bookid int,bookname varchar(20));
+create table libraryaudit1(bookid int,bookname varchar(20));
+insert into library1 values(1,'aa');
+insert into library1 values(2,'bb');
+insert into library1 values(2,'cc');
+create or replace trigger trigger123 before update on library1
+for each row begin
+insert into libraryaudit1(bookid,bookname) values(:OLD.bookid,:OLD.bookname);
+end;
+/
+update library1 set bookname='vv' where bookid=2;
+select * from libraryaudit1;

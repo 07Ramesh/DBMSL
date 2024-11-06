@@ -1,0 +1,10 @@
+show dbs
+use mydb
+show collections;
+db.createCollection("student");
+db.student.insert({name:"suresss",age:69,city:"Badlapur"});
+db.student.update({name:"suresss"},{$set:{name:"surya"});
+db.student.insert({name:"paresss",age:96,city:"parbadal"});
+db.student.delete({name:"suresss"});
+db.library.count();
+db.library.find().pretty();
